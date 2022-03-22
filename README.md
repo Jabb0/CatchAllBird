@@ -1,6 +1,8 @@
 # CatchAll-Bird
 This extension allows the use of CatchAll-Addresses with Thunderbird.
 
+https://addons.thunderbird.net/de/thunderbird/addon/catchall-bird/
+
 It handles incoming messages addressed to all `<prefix>@domain.tld` for a fixed domain.
 
 As such the features are:
@@ -17,7 +19,7 @@ On incoming messages for `domain.tld` it will be:
 
 ## Install
 ### Automatic Install (Recommended)
-Load the Addon from the Mozilla AddOn Store.
+Load the Addon from the [Mozilla AddOn Store](https://addons.thunderbird.net/de/thunderbird/addon/catchall-bird/).
 
 ### Manual Install
 This addon is installed manually by Menu->Addons and Themes->Gear Icon->Install Addon from file->Select the xpi file.
