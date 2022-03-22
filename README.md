@@ -23,4 +23,13 @@ Load the Addon from the Mozilla AddOn Store.
 This addon is installed manually by Menu->Addons and Themes->Gear Icon->Install Addon from file->Select the xpi file.
 
 ## Setup
-Go to Menu->Addons and Themes->Select "CatchAll Bird"->Settings->Tick the checkbox for the accounts you want to catchallify.
+1. Go to Menu
+2. Addons and Themes
+3. Select "CatchAll Bird"
+4. Settings
+5. Tick the checkbox for the accounts you want to catchallify
+
+## Build
+This project uses minification for the final build. Install it with `npm install uglify-js -g`. We will need to have node and npm installed. Any platform with bash support should work. Tested version are node==v17.7.2 and npm==8.5.2.
+
+Build the xpi package using `./build.sh`.
