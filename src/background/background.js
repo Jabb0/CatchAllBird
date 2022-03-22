@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2022, Jabb0 https://github.com/Jabb0
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/ 
+ */
+
 // A wrapper function returning an async iterator for a MessageList. Derived from
 // https://webextension-api.thunderbird.net/en/91/how-to/messageLists.html
 async function* iterateMessagePages(page) {
