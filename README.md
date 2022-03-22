@@ -20,4 +20,4 @@ On incoming messages for `domain.tld` it will be:
 Load the Addon from the Mozilla AddOn Store.
 
 ### Manual Install
-This addon is installed manually by Menu->Addons and Themes->Gear Icon->Install Addon from file->Select the xpi file
+This addon is installed manually by Menu->Addons and Themes->Gear Icon->Install Addon from file->Select the xpi file.
