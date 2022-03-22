@@ -21,3 +21,6 @@ Load the Addon from the Mozilla AddOn Store.
 
 ### Manual Install
 This addon is installed manually by Menu->Addons and Themes->Gear Icon->Install Addon from file->Select the xpi file.
+
+## Setup
+Go to Menu->Addons and Themes->Select "CatchAll Bird"->Settings->Tick the checkbox for the accounts you want to catchallify.

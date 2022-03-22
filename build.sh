@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-rm -r build
+[ -e build ] && rm -r build
 # Copy sources
 cp -r src build
 # Minify all contained JS sources
@@ -10,6 +10,7 @@ do
     mv "${file}.tmp" "$file"
 done
 # Name the minified sources back
-zip -r catchallbird.xpi build -x "*.sh" -x "*/\.*" -x ".*"
+[ -e catchallbird.xpi ] && rm catchallbird.xpi
+cd build && zip -r ../catchallbird.xpi . -x "*.sh" -x "*/\.*" -x ".*" && cd ..
 # Remove tmp folder
 rm -r build
