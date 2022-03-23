@@ -21,6 +21,8 @@ async function* iterateMessagePages(page) {
 }
 
 const GLOBAL_INBOX_PATH = "/INBOX";
+const DOT_SUBSTITUTION = "DOT";
+const EMAIL_IN_RECIPIENT_REGEXP = /<?([^<>\s]+?)>?$/;
 
 function getPrefixFromMessage(domain, recipients, ccList, bccList) {
     const emailIsFromCatchAll = recipient => recipient.endsWith(domain);
@@ -34,8 +36,16 @@ function getPrefixFromMessage(domain, recipients, ccList, bccList) {
         bccList
     ]
 
+    // The fields do not need to include the email address only.
+    // Usually it is "prefix@domain.tld" or "Name <prefix@domain.tld>"
+    // I don't see an option to get the email part only
+    // Thus we need to parse these two formats
+
     for (const field of possibleFields) {
-        const ownAddresses = field.filter(emailIsFromCatchAll);
+        const ownAddresses = field.map(address => {
+            const match = EMAIL_IN_RECIPIENT_REGEXP.exec(address);
+            return match !== null ? match[1] : null;
+        }).filter(match => !!match && emailIsFromCatchAll(match));
         if (ownAddresses.length > 0) {
             return prefixFromEmail(ownAddresses[0], domain);
         }
@@ -52,18 +62,23 @@ async function moveMessages(parentFolder, mailMapping) {
     const subfolders = await messenger.folders.getSubFolders(parentFolder, false);
     const subfolderMapping = new Map(subfolders.map(subfolder => [subfolder.name, subfolder]));
 
+    // Some mail server seem to thread . as separator between folders. Naming a folder with a dot will cause the creation of a subfolder and the move to fail.
+    // So we will replace for folder names all . with DOT
+
     for (const [prefix, mailIds] of mailMapping) {
+        const dotReplacedPrefix = prefix.replace(".", DOT_SUBSTITUTION);
         // Make sure the prefix subfolder exists
-        if (!subfolderMapping.has(prefix)) {
-            subfolderMapping.set(prefix, await messenger.folders.create(parentFolder, prefix));
+        if (!subfolderMapping.has(dotReplacedPrefix)) {
+            // TODO: This create does strange stuff when prefix contains dots.
+            subfolderMapping.set(dotReplacedPrefix, await messenger.folders.create(parentFolder, dotReplacedPrefix));
         }
 
-        await messenger.messages.move(mailIds, subfolderMapping.get(prefix));
+        await messenger.messages.move(mailIds, subfolderMapping.get(dotReplacedPrefix));
     }
 }
 
 function prefixFromEmail(email, domain) {
-    return email.slice(0, -(domain.length + 1))
+    return email.slice(0, -(domain.length + 1)).toLowerCase();
 }
 
 async function updateIdentities(account, domain, neededPrefixes) {
@@ -122,7 +137,7 @@ async function processMessages(folder, messages) {
         const prefix = getPrefixFromMessage(domain, recipients, ccList, bccList);
 
         if (prefix === null) {
-            console.warn(`Message ${id} does not have a recipient associated with domain ${domain}. Thus it is not moved. Check if this is a mistake.`);
+            console.warn(`Message ${id} does not have a recipient associated with domain ${domain}. Thus it is not moved. Check if this is a mistake.`, message);
         } else {
             if (!mailMapping.has(prefix)) {
                 mailMapping.set(prefix, []);
@@ -140,7 +155,37 @@ async function processMessages(folder, messages) {
     }
 }
 
+async function processInbox() {
+    // Get inbox folder of all accounts to listen for
+    const { catchAllBirdAccounts: accounts } = await messenger.storage.local.get({ catchAllBirdAccounts: new Set() });
+
+    for (const accountId of accounts) {
+        const account = await messenger.accounts.get(accountId, true);
+        const inboxFolder = account.folders.filter(folder => folder.path == GLOBAL_INBOX_PATH)[0] || null;
+        if (inboxFolder === null) {
+            console.warn(`Account ${account} does not have inbox folder with path ${GLOBAL_INBOX_PATH}`);
+        } else {
+            const messages = await messenger.messages.list(inboxFolder);
+            await processMessages(inboxFolder, messages);
+        }
+    }
+}
+
 async function load() {
+    // Setup menu button for reprocessing inbox
+    const menu_id = await messenger.menus.create({
+        title: "CatchAll Bird: Process INBOX",
+        contexts: [
+            "tools_menu"
+        ],
+    });
+
+    await messenger.menus.onClicked.addListener(async (info, tab) => {
+        if (info.menuItemId == menu_id) {
+            await processInbox();
+        }
+    });
+
     // Add a listener for the onNewMailReceived events.
     // On each new message decide what to do
     // Messages are through junk classification and message filters
