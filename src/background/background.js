@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/ 
  */
 
+ import { DEFAULT_OPTIONS } from "../common/common.js";
+
 // A wrapper function returning an async iterator for a MessageList. Derived from
 // https://webextension-api.thunderbird.net/en/91/how-to/messageLists.html
 async function* iterateMessagePages(page) {
@@ -108,7 +110,14 @@ async function updateIdentities(account, domain, neededPrefixes) {
 
 async function processMessages(folder, messages) {
     // Get list of accounts to listen to
-    const { catchAllBirdAccounts: accounts } = await messenger.storage.local.get({ catchAllBirdAccounts: new Set() });
+    const { 
+        catchAllBirdAccounts: accounts,
+        catchAllBirdOptions: options 
+    } = await messenger.storage.local.get({ 
+        catchAllBirdAccounts: new Set(),
+        catchAllBirdOptions: { ...DEFAULT_OPTIONS }
+    });
+
     const { accountId, path } = folder;
 
     // Decide if this message is relevant for the tool by accountId and folder
@@ -149,9 +158,13 @@ async function processMessages(folder, messages) {
 
     if (mailMapping.size > 0) {
         // Move emails to respective subfolder
-        await moveMessages(folder, mailMapping);
+        if (options.isAutomaticFolderCreationEnabled) {
+            await moveMessages(folder, mailMapping);
+        }
         // Create identities associated with subdomains
-        await updateIdentities(account, domain, mailMapping.keys());
+        if (options.isAutomaticIdentityCreationEnabled) {
+            await updateIdentities(account, domain, mailMapping.keys());
+        }
     }
 }
 
