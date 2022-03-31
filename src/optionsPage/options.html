@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <title>CatchAll Bird Options</title>
     <link rel="stylesheet" type="text/css" media="screen" href="options.css">
-    <script src="options.js"></script>
+    <script src="options.js" type="module"></script>
 </head>
 <body>
+    <h2>Account Settings</h2>
     <table id="main-table">
         <tr>
             <th scope="col">Id</th>
@@ -15,5 +16,18 @@
             <th scope="col">Enable/Disable</th>
         </tr>
     </table>
+    <div>
+        <h2>General Settings</h2>
+        <table id="generalsettings">
+            <tr>
+                <th scope="col">Create Folders automatically</th>
+                <td scope="col"><input type="checkbox" id="ckbxfoldercreation"></td>
+            </tr>
+            <tr>
+                <th scope="col">Create Identities automatically</th>
+                <td scope="col"><input type="checkbox" id="ckbxidentitycreation"></td>
+            </tr>
+        </table>
+    </div>
 </body>
 </html>
