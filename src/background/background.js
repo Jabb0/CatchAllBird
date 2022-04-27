@@ -24,7 +24,7 @@ async function* iterateMessagePages(page) {
 
 const GLOBAL_INBOX_PATH = "/INBOX";
 const DOT_SUBSTITUTION = "DOT";
-const EMAIL_IN_RECIPIENT_REGEXP = /<?([a-zA-Z-.+0-9]+?@[a-zA-Z0-9-.+]+?)>?$/;
+const EMAIL_IN_RECIPIENT_REGEXP = /<?([a-zA-Z-_.+0-9]+?@[a-zA-Z0-9-_.+]+?)>?$/;
 
 function getPrefixFromMessage(domain, recipients, ccList, bccList) {
     const emailIsFromCatchAll = recipient => recipient.endsWith(domain);
