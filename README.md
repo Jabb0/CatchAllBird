@@ -17,7 +17,7 @@ On incoming messages for `domain.tld` it:
 2. checks if a subfolder of the inbox with the name `<prefix>` already exists. If not, it creates the folder
 3. moves the message into the inbox subfolder named `<prefix>`.
 
-For security reasons, a prefix can only have the characters `a-z`, `A-Z`, `-`, `.`, `+` and `0-9`. In addition, all dots are replaced with "DOT" in the folder names.
+For security reasons, a prefix can only have the characters `a-z`, `A-Z`, `-`, `.`, `+`, `_` and `0-9`. In addition, all dots are replaced with "DOT" in the folder names.
 
 ## Install
 ### Automatic Install (Recommended)
