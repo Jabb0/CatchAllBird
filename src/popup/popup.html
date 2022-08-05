@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+                      "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"
+>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CatchAll-Bird Important Info</title>
+    <script src="popup.js"></script>      
+  </head>
+  <body>
+    <h1>CatchAll-Bird - Important Info</h1>
+    
+    <p>
+        <label>Don't show again: </label><input id="checkbox_noshow" type="checkbox" data="true">
+    </p>
+
+    <p>
+        Dear CatchAll-Bird user. Thank you for using this AddOn.
+    </p>
+
+    <p>
+        Please note this <b>important</b> limitation regarding the automatic identity creation, that recently came to my attention.
+    </p>
+
+    <h4>Short Version</h4>
+    Due to a limitation of the Thunderbird AddOn interface, the outgoing mail server (SMTP) of the catch-all account needs to be the default outgoing mail server for the whole installation.<br>
+    This default server can be changed in the settings (see section "What to do?").<br>
+    Further, because of this it is only possible to have a single catch-all address when using the automatic identity creation feature.<br>
+    This is because when sending using an identity created by this AddOn the (at time of sending) default outgoing mail server of the Thunderbird installation is used.
+    With the currently available AddOn interfaces this cannot be changed.
+
+    <h3>What happens?</h3>
+    Due to a missing feature in the Thunderbird AddOn interface, the outgoing mail server (SMTP) might not be set as expected for identites created by this AddOn.<br>
+    <br>
+    A mail account is each account you setup in Thunderbird (e.g. you@yourdomain.com or you@yourdomain2.net or you@publicmailprovider.com).
+    <br><br>
+    By design each new identity for a prefix is a copy of the first (main) identity of the mail account (except for the new prefix email).<br>
+    This way the identity settings you made for this mail account should be preserved.<br><br>
+    However, there is no way of specifying the per-identity outgoing mail server (SMTP) for an new identity.<br>
+    And instead of using the known outgoing server of the mail account, Thunderbird uses the default outgoing mail server of the whole installation (at time of sending).
+    <br><br>
+    This is an issue if the default outgoing mail server is not the one for your catch-all email account.<br>
+    If this is not the case Thunderbird will try to send your responses to prefix emails via the wrong outgoing mail server.
+
+    <h3>Who is effected?</h3>
+    This issue affects users that do not have their catch-all address as default outgoing mail server (SMTP) in the Thunderbird settings <b>or</b> have multiple catch-all addresses.<br>
+    This is most likely the case if another mail account is present before the catch-all mail account.<br>
+    <br>
+    You can check the current default outgoing mail server at: Tools -> Account Settings -> Outgoing Server (SMTP)
+
+    <h3>What to do?</h3>
+    Until Thunderbird adds the required interface (or changes the default behaviour) the options are limited. Due to the missing interface this step needs to be manual.<br><br>
+
+    Change the default SMTP server at<br>
+    Account-Settings -> Outgoing Server (SMTP) -> Your catch-all account SMTP Server -> Set Default<br>
+    
+    Further, (in my opinion) this mean that only a single catch-all address can be used, because the login credentials are part of the SMTP server config.<br>
+    <br>
+    If this does not work for you please disable the AddOn for this account and go to Account-Settings -> Your Mail Account -> Manage Identities and delete the identities created by the AddOn.<br>
+    Otherwise, when using these identities the current default outgoing mail server will be used as described above.<br>
+    <b>Alternatively</b>, manually change the SMTP server inside each of the identities.
+
+    <br><br>
+    Sorry for the inconvenience.<br>
+    Further details and discussion can be found on the <a href="https://github.com/Jabb0/CatchAllBird">GitHub</a>.
+  </body>
+</html>

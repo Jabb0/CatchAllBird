@@ -3,6 +3,23 @@ This extension allows the use of CatchAll-Addresses with Thunderbird.
 
 https://addons.thunderbird.net/de/thunderbird/addon/catchall-bird/
 
+## Important Limitation: Please Note
+It came to my attention that there is an issue with thunderbird when multiple email accounts are present (or maybe even were present). Thanks to @alex9099 at issue [6](https://github.com/Jabb0/CatchAllBird/issues/6).
+This should not affect you if you have only used the catch-all account in your thunderbird installation and no second account.
+
+Due to limitations in thunderbirds AddOn API all new identities will use the default SMTP server for outgoing mails. 
+But for Thunderbird this is a global default server instead of the one for the mail account (usually the SMTP server of the first email account created in the installation). This means that identities created by this AddOn might not use the correct outgoing SMTP server.
+They will use the default SMTP server at the time of sending the email. 
+
+It is not possible to see or change the SMTP server via the interface the AddOn can access. Even though the main identity of a mail account is copied the server is not preserved.
+
+Until this is fixed by the thunderbird team the only mitigation is to set the default SMTP server to the server of your catch-all address.
+Change the default SMTP server via Account-Settings -> Outgoing Server (SMTP) -> <Your catch-all SMTP Server> -> Set Default.
+
+If this does not work for you please disable the AddOn for the conflicting email accounts and go to Account-Settings -> <Your Account> -> Manage Identities and delete the identities created by the AddOn.
+Sorry for the inconvenience.
+
+# Description
 It handles incoming messages addressed to all `<prefix>@domain.tld` for a fixed domain.
 
 As such, the features are:

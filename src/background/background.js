@@ -184,7 +184,24 @@ async function processInbox() {
     }
 }
 
+ async function welcomeTab() {
+    await messenger.tabs.create({
+        url: "../popup/popup.html",
+        index: 1
+    });
+ }
+
 async function load() {
+    const { 
+        catchAllBirdHideWelcomeMessage: hideWelcomeMessage
+    } = await messenger.storage.local.get({
+        catchAllBirdHideWelcomeMessage: false
+    });
+
+    if (!hideWelcomeMessage) {
+        await welcomeTab();
+    }
+
     // Setup menu button for reprocessing inbox
     const menu_id = await messenger.menus.create({
         title: "CatchAll Bird: Process INBOX",
