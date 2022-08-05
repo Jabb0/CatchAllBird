@@ -14,9 +14,9 @@ They will use the default SMTP server at the time of sending the email.
 It is not possible to see or change the SMTP server via the interface the AddOn can access. Even though the main identity of a mail account is copied the server is not preserved.
 
 Until this is fixed by the thunderbird team the only mitigation is to set the default SMTP server to the server of your catch-all address.
-Change the default SMTP server via Account-Settings -> Outgoing Server (SMTP) -> <Your catch-all SMTP Server> -> Set Default.
+Change the default SMTP server via `Account-Settings -> Outgoing Server (SMTP) -> <Your catch-all SMTP Server> -> Set Default`.
 
-If this does not work for you please disable the AddOn for the conflicting email accounts and go to Account-Settings -> <Your Account> -> Manage Identities and delete the identities created by the AddOn.
+If this does not work for you please disable the AddOn for the conflicting email accounts and go to `Account-Settings -> <Your Account> -> Manage Identities` and delete the identities created by the AddOn.
 Sorry for the inconvenience.
 
 # Description
