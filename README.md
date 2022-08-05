@@ -4,6 +4,10 @@ This extension allows the use of CatchAll-Addresses with Thunderbird.
 https://addons.thunderbird.net/de/thunderbird/addon/catchall-bird/
 
 ## Important Limitation: Please Note
+Short:
+1. The catch-all mail address must be the default SMTP server for the whole installation.
+2. It's likely only possible to have a single catch-all mail address enabled.
+
 It came to my attention that there is an issue with thunderbird when multiple email accounts are present (or maybe even were present). Thanks to @alex9099 at issue [6](https://github.com/Jabb0/CatchAllBird/issues/6).
 This should not affect you if you have only used the catch-all account in your thunderbird installation and no second account.
 
