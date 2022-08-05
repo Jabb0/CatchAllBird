@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "CatchAll Bird",
     "description": "Enable Thunderbird to handle CatchAll email addresses.",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "author": "Jabb0",
     "applications": {
         "gecko": {
