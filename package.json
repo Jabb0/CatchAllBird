@@ -1,0 +1,34 @@
+{
+  "name": "catchallbird",
+  "version": "1.0.8",
+  "description": "Enable Thunderbird to handle CatchAll email addresses.",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "mocha --recursive './tests/*test.js'",
+    "build": "./build.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jabb0/CatchAllBird.git"
+  },
+  "keywords": [
+    "thunderbird",
+    "addon",
+    "catch-all"
+  ],
+  "author": "Jabb0",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/Jabb0/CatchAllBird/issues"
+  },
+  "homepage": "https://github.com/Jabb0/CatchAllBird#readme",
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "uglify-js": "^3.17.4"
+  }
+}
