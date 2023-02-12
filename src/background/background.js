@@ -114,7 +114,7 @@ async function processMessages(folder, messages) {
         const prefix = getPrefixFromMessage(domain, recipients, ccList, bccList);
 
         if (prefix === null) {
-            console.warn(`Message ${id} does not have a recipient associated with domain ${domain}. Thus it is not moved. Check if this is a mistake.`, message);
+            console.warn(`Message ${id} does not have a recipient associated with domain ${domain}. Thus it is not processed. Check if this is a mistake.`, message);
         } else {
             if (!mailMapping.has(prefix)) {
                 mailMapping.set(prefix, []);
