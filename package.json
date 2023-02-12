@@ -1,6 +1,6 @@
 {
   "name": "catchallbird",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Enable Thunderbird to handle CatchAll email addresses.",
   "main": "index.js",
   "type": "module",

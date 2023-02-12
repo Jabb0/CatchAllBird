@@ -87,11 +87,10 @@ async function processMessages(folder, messages) {
         catchAllBirdOptions: { ...DEFAULT_OPTIONS }
     });
 
-    const { accountId, path } = folder;
+    const { accountId } = folder;
 
     // Decide if this message is relevant for the tool by accountId and folder
-    // only use /INBOX
-    if (!accounts.has(accountId) || path !== GLOBAL_INBOX_PATH)
+    if (!accounts.has(accountId))
         return;
 
     const account = await messenger.accounts.get(accountId, true);  // Include mail folders as well
@@ -153,6 +152,16 @@ async function processInbox() {
     }
 }
 
+async function onNewMailReceived(folder, messages) {
+
+    // Only use new mail in the inbox folder
+    if (folder.path !== GLOBAL_INBOX_PATH) {
+        return;
+    }
+
+    await processMessages(folder, messages);
+}
+
  async function welcomeTab() {
     await messenger.tabs.create({
         url: "../popup/popup.html",
@@ -160,17 +169,8 @@ async function processInbox() {
     });
  }
 
-async function load() {
-    const { 
-        catchAllBirdHideWelcomeMessage: hideWelcomeMessage
-    } = await messenger.storage.local.get({
-        catchAllBirdHideWelcomeMessage: false
-    });
 
-    if (!hideWelcomeMessage) {
-        await welcomeTab();
-    }
-
+async function addMenuItemProcessInbox() {
     // Setup menu button for reprocessing inbox
     const menu_id = await messenger.menus.create({
         title: "CatchAll Bird: Process INBOX",
@@ -184,11 +184,49 @@ async function load() {
             await processInbox();
         }
     });
+}
+
+
+async function addMenuItemProcessFolder() {
+    // Setup menu button for processing a specific folder
+    const menu_id = await messenger.menus.create({
+        title: "CatchAll Bird: Process this folder",
+        contexts: [
+            "folder_pane"
+        ],
+    });
+
+    await messenger.menus.onClicked.addListener(async (info, tab) => {
+        if (info.menuItemId == menu_id) {
+            const { selectedFolder } = info;
+
+            if (!!selectedFolder) {
+                const messages = await messenger.messages.list(selectedFolder);
+                await processMessages(selectedFolder, messages);
+            }
+        }
+    });
+}
+
+
+async function load() {
+    const { 
+        catchAllBirdHideWelcomeMessage: hideWelcomeMessage
+    } = await messenger.storage.local.get({
+        catchAllBirdHideWelcomeMessage: false
+    });
+
+    if (!hideWelcomeMessage) {
+        await welcomeTab();
+    }
+
+    await addMenuItemProcessInbox();
+    await addMenuItemProcessFolder();
 
     // Add a listener for the onNewMailReceived events.
     // On each new message decide what to do
     // Messages are through junk classification and message filters
-    await messenger.messages.onNewMailReceived.addListener(processMessages);
+    await messenger.messages.onNewMailReceived.addListener(onNewMailReceived);
 }
 
 document.addEventListener("DOMContentLoaded", load);
