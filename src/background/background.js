@@ -6,6 +6,7 @@
  */
 
  import { DEFAULT_OPTIONS } from "../common/common.js";
+ import { getPrefixFromMessage, prefixFromEmail } from "./utils.js";
 
 // A wrapper function returning an async iterator for a MessageList. Derived from
 // https://webextension-api.thunderbird.net/en/91/how-to/messageLists.html
@@ -24,36 +25,6 @@ async function* iterateMessagePages(page) {
 
 const GLOBAL_INBOX_PATH = "/INBOX";
 const DOT_SUBSTITUTION = "DOT";
-const EMAIL_IN_RECIPIENT_REGEXP = /<?([a-zA-Z-_.+0-9]+?@[a-zA-Z0-9-_.+]+?)>?$/;
-
-function getPrefixFromMessage(domain, recipients, ccList, bccList) {
-    const emailIsFromCatchAll = recipient => recipient.endsWith(domain);
-
-    // Order matters
-    // Make sure this message should not be in two <prefix> accounts. If so prefer recipients (TO) over CC and BCC.
-    // NOTE: Seems like bccList is always empty for incoming messages.
-    const possibleFields = [
-        recipients,
-        ccList,
-        bccList
-    ]
-
-    // The fields do not need to include the email address only.
-    // Usually it is "prefix@domain.tld" or "Name <prefix@domain.tld>"
-    // I don't see an option to get the email part only
-    // Thus we need to parse these two formats
-
-    for (const field of possibleFields) {
-        const ownAddresses = field.map(address => {
-            const match = EMAIL_IN_RECIPIENT_REGEXP.exec(address);
-            return match !== null ? match[1] : null;
-        }).filter(match => !!match && emailIsFromCatchAll(match));
-        if (ownAddresses.length > 0) {
-            return prefixFromEmail(ownAddresses[0], domain);
-        }
-    }
-    return null;
-}
 
 async function moveMessages(parentFolder, mailMapping) {
     // parentFolder is Object MailFolder
@@ -79,9 +50,7 @@ async function moveMessages(parentFolder, mailMapping) {
     }
 }
 
-function prefixFromEmail(email, domain) {
-    return email.slice(0, -(domain.length + 1)).toLowerCase();
-}
+
 
 async function updateIdentities(account, domain, neededPrefixes) {
     // neededPrefixes is iterator on prefixes
