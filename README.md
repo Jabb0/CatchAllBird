@@ -56,6 +56,10 @@ This addon is installed manually by Menu->"Addons and Themes"->Gear Icon->"Insta
 
 By default, CatchAllbird creates new folders and identities automatically. Both creations can be disabled in the addon settings.
 
+## Usage
+
+Click "Tools"->"CatchAll Bird: Process INBOX" to run.
+
 ## Build
 This project uses minification for the final build. Install it with `npm install uglify-js -g`. Building the project needs to have node and npm installed. Any platform with bash support should work. Tested version are node==v17.7.2 and npm==8.5.2.
 
