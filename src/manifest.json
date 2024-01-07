@@ -4,7 +4,7 @@
     "description": "Enable Thunderbird to handle CatchAll email addresses.",
     "version": "1.0.8",
     "author": "Jabb0",
-    "applications": {
+    "browser_specific_settings": {
         "gecko": {
             "id": "catchallbird@jabb0",
             "strict_min_version": "78.0"
