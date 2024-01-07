@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/ 
  */
 
-import { processInbox, processMessagesInFolder, onNewMailReceived} from "./processing";
+import { processInbox, processMessagesInFolder, onNewMailReceived} from "./processing.js";
 
 async function welcomeTab() {
     await messenger.tabs.create({
