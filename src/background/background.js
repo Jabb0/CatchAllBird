@@ -89,7 +89,7 @@ async function processMessages(folder, messages) {
 
     const { accountId } = folder;
 
-    // Decide if this message is relevant for the tool by accountId and folder
+    // Decide if this message should be processed by accountId and folder
     if (!accounts.has(accountId))
         return;
 
@@ -104,7 +104,7 @@ async function processMessages(folder, messages) {
     const domain = identities[0].split("@").pop();
 
     // Mapping from <prefix> to mail ids to move there
-    // In theory this could use pagination. But we never handle that many messages I guess.
+    // In theory this could use pagination. But we never handle that many messages yet.
     const mailMapping = new Map();
 
     for await (let message of iterateMessagePages(messages)) {
@@ -127,7 +127,8 @@ async function processMessages(folder, messages) {
     if (mailMapping.size > 0) {
         // Move emails to respective subfolder
         if (options.isAutomaticFolderCreationEnabled) {
-            await moveMessages(folder, mailMapping);
+            const inboxFolder = await getInboxForAccount(accountId);
+            await moveMessages(inboxFolder, mailMapping);
         }
         // Create identities associated with subdomains
         if (options.isAutomaticIdentityCreationEnabled) {
@@ -136,20 +137,30 @@ async function processMessages(folder, messages) {
     }
 }
 
+async function getInboxForAccount(accountId) {
+    const account = await messenger.accounts.get(accountId, true);
+    const inboxFolder = account.folders.filter(folder => folder.path == GLOBAL_INBOX_PATH)[0] || null;
+    return inboxFolder;
+}
+
 async function processInbox() {
     // Get inbox folder of all accounts to listen for
     const { catchAllBirdAccounts: accounts } = await messenger.storage.local.get({ catchAllBirdAccounts: new Set() });
 
     for (const accountId of accounts) {
-        const account = await messenger.accounts.get(accountId, true);
-        const inboxFolder = account.folders.filter(folder => folder.path == GLOBAL_INBOX_PATH)[0] || null;
+        
+        const inboxFolder = await getInboxForAccount(accountId);
         if (inboxFolder === null) {
             console.warn(`Account ${account} does not have inbox folder with path ${GLOBAL_INBOX_PATH}`);
         } else {
-            const messages = await messenger.messages.list(inboxFolder);
-            await processMessages(inboxFolder, messages);
+            await processMessagesInFolder(inboxFolder);
         }
     }
+}
+
+async function processMessagesInFolder(folder) {
+    const allMessages = await messenger.messages.list(folder);
+    await processMessages(folder, allMessages);
 }
 
 async function onNewMailReceived(folder, messages) {
@@ -201,8 +212,7 @@ async function addMenuItemProcessFolder() {
             const { selectedFolder } = info;
 
             if (!!selectedFolder) {
-                const messages = await messenger.messages.list(selectedFolder);
-                await processMessages(selectedFolder, messages);
+                processMessagesInFolder(selectedFolder);
             }
         }
     });
@@ -225,7 +235,7 @@ async function load() {
 
     // Add a listener for the onNewMailReceived events.
     // On each new message decide what to do
-    // Messages are through junk classification and message filters
+    // Messages are already filtered by junk classification and message filters
     await messenger.messages.onNewMailReceived.addListener(onNewMailReceived);
 }
 
