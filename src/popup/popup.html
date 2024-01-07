@@ -20,7 +20,7 @@
     </p>
 
     <p>
-        Please note this <b>important</b> limitation regarding the automatic identity creation, that recently came to my attention.
+        Please note this <b>important</b> limitation regarding the automatic identity creation.
     </p>
 
     <h4>Short Version</h4>
@@ -28,7 +28,7 @@
     This default server can be changed in the settings (see section "What to do?").<br>
     Further, because of this <b>it is only possible to have a single catch-all address enabled</b> when using the automatic identity creation feature.<br>
     This is because when sending using an identity created by this AddOn the (at time of sending) default outgoing mail server of the Thunderbird installation is used.
-    With the currently available AddOn interfaces this cannot be changed.
+    With the currently available AddOn interfaces this cannot be changed. There is an open request in the <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1790760">thunderbird bugtracker</a>.
 
     <h3>What happens?</h3>
     Due to a missing feature in the Thunderbird AddOn interface, the outgoing mail server (SMTP) might not be set as expected for identites created by this AddOn.<br>
@@ -43,7 +43,7 @@
     This is an issue if the default outgoing mail server is not the one for your catch-all email account.<br>
     If this is not the case Thunderbird will try to send your responses to prefix emails via the wrong outgoing mail server.
 
-    <h3>Who is effected?</h3>
+    <h3>Who is affected?</h3>
     This issue affects users that do not have their catch-all address as default outgoing mail server (SMTP) in the Thunderbird settings <b>or</b> have multiple catch-all addresses.<br>
     This is most likely the case if another mail account is present before the catch-all mail account.<br>
     <br>
@@ -55,7 +55,7 @@
     Change the default SMTP server at<br>
     Account-Settings -> Outgoing Server (SMTP) -> Your catch-all account SMTP Server -> Set Default<br>
     
-    Further, (in my opinion) this mean that only a single catch-all address can be used, because the login credentials are part of the SMTP server config.<br>
+    Further, this usually means that only a single catch-all address can be used. The login credentials are stored in the SMTP server config. Therefore, the SMTP server is either the wrong one or would need to know which domain to sent from. <br>
     <br>
     If this does not work for you please disable the AddOn for this account and go to Account-Settings -> Your Mail Account -> Manage Identities and delete the identities created by the AddOn.<br>
     Otherwise, when using these identities the current default outgoing mail server will be used as described above.<br>
