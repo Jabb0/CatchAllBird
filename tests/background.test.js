@@ -4,6 +4,7 @@ import { assert } from "chai";
 chai.should();
 
 import { getPrefixFromMessage } from "../src/background/utils.js";
+import { moveMessages } from "../src/background/processing.js";
 
 describe("getPrefixFromMessage()", function () {
     describe("with only email in recipient", function() {
@@ -142,4 +143,76 @@ describe("getPrefixFromMessage()", function () {
             prefix.should.equal("foo.bar2");
         });
     });
+});
+
+describe("moveMessages()", function() {
+    it("should create new folder if necessary", async function() {
+        const parentFolder = {
+            accountId: "blaa",
+            path: "blub",
+            name: "blub",
+            // subFolders: []
+        }
+        messenger.folders.getSubFolders.mockImplementation(async () => {
+            return [];
+        });
+
+        const mailIds = [1,3,5];
+
+        const mailMapping = new Map();
+        mailMapping.set("peter", mailIds);
+
+        const newFolder = {
+            accountId: "blaa",
+            path: "blub.peter",
+            name: "peter",
+            // subFolders: []
+        }
+
+        messenger.folders.create.mockImplementation(async () => {
+            return newFolder;
+        });
+
+
+        moveMessages(parentFolder, mailMapping);
+
+        await expect(messenger.folders.getSubFolders).toHaveBeenCalledWith(parentFolder, false);
+        await expect(messenger.folders.create).toHaveBeenCalledWith(parentFolder, "peter");
+        await expect(messenger.messages.move).toHaveBeenCalledWith(mailIds, newFolder);
+    })
+
+    it("should create new folder with dot replacement if necessary", async function() {
+        const parentFolder = {
+            accountId: "blaa",
+            path: "blub",
+            name: "blub",
+            // subFolders: []
+        }
+        messenger.folders.getSubFolders.mockImplementation(async () => {
+            return [];
+        });
+
+        const mailIds = [1,3,5];
+
+        const mailMapping = new Map();
+        mailMapping.set("peter.hans.wurst", mailIds);
+
+        const newFolder = {
+            accountId: "blaa",
+            path: "blub.peterDOThansDOTwurst",
+            name: "peterDOThansDOTwurst",
+            // subFolders: []
+        }
+
+        messenger.folders.create.mockImplementation(async () => {
+            return newFolder;
+        });
+
+
+        moveMessages(parentFolder, mailMapping);
+
+        await expect(messenger.folders.getSubFolders).toHaveBeenCalledWith(parentFolder, false);
+        await expect(messenger.folders.create).toHaveBeenCalledWith(parentFolder, "peterDOThansDOTwurst");
+        await expect(messenger.messages.move).toHaveBeenCalledWith(mailIds, newFolder);
+    })
 });
