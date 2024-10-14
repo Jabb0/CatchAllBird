@@ -11,7 +11,8 @@
         }
     },
     "background": {
-        "page": "background/background.html"
+        "scripts": ["background/background.js"],
+        "type": "module"
     },
     "options_ui": {
         "page": "optionsPage/options.html",

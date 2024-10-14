@@ -13,8 +13,7 @@ async function welcomeTab() {
         index: 1
     });
  }
- 
- 
+
  async function addMenuItemProcessInbox() {
     // Setup menu button for reprocessing inbox
     const menu_id = await messenger.menus.create({
@@ -24,15 +23,8 @@ async function welcomeTab() {
         ],
         id: "catchallbirdMenuItemProcessInbox"
     });
- 
-    await messenger.menus.onClicked.addListener(async (info, tab) => {
-        if (info.menuItemId == menu_id) {
-            await processInbox();
-        }
-    });
  }
- 
- 
+
  async function addMenuItemProcessFolder() {
     // Setup menu button for processing a specific folder
     const menu_id = await messenger.menus.create({
@@ -42,20 +34,7 @@ async function welcomeTab() {
         ],
         id: "catchallbirdMenuItemProcessFolder"
     });
- 
-    await messenger.menus.onClicked.addListener(async (info, tab) => {
-        if (info.menuItemId == menu_id) {
-            const { selectedFolders } = info;
- 
-            if (!!selectedFolders) {
-                for (const folder of selectedFolders) {
-                    processMessagesInFolder(folder);
-                }
-            }
-        }
-    });
  }
-
 
 async function load() {
     const { 
@@ -70,11 +49,32 @@ async function load() {
 
     await addMenuItemProcessInbox();
     await addMenuItemProcessFolder();
+};
 
-    // Add a listener for the onNewMailReceived events.
-    // On each new message decide what to do
-    // Messages are already filtered by junk classification and message filters
-    await messenger.messages.onNewMailReceived.addListener(onNewMailReceived);
-}
+// listener creation has to be on top level to work with manifest v3 
+// https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers#register-listeners
+
+// Add a listener for the onNewMailReceived events.
+// On each new message decide what to do
+// Messages are already filtered by junk classification and message filters
+messenger.messages.onNewMailReceived.addListener(onNewMailReceived);
+
+messenger.menus.onClicked.addListener(async (info, tab) => {
+    if (info.menuItemId == "catchallbirdMenuItemProcessFolder") {
+        const { selectedFolders } = info;
+
+        if (!!selectedFolders) {
+            for (const folder of selectedFolders) {
+                processMessagesInFolder(folder);
+            }
+        }
+    }
+});
+
+messenger.menus.onClicked.addListener(async (info, tab) => {
+    if (info.menuItemId == "catchallbirdMenuItemProcessInbox") {
+        await processInbox();
+    }
+});
 
 document.addEventListener("DOMContentLoaded", load);
