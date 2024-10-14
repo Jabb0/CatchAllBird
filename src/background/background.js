@@ -22,6 +22,7 @@ async function welcomeTab() {
         contexts: [
             "tools_menu"
         ],
+        id: "catchallbirdMenuItemProcessInbox"
     });
  
     await messenger.menus.onClicked.addListener(async (info, tab) => {
@@ -39,14 +40,17 @@ async function welcomeTab() {
         contexts: [
             "folder_pane"
         ],
+        id: "catchallbirdMenuItemProcessFolder"
     });
  
     await messenger.menus.onClicked.addListener(async (info, tab) => {
         if (info.menuItemId == menu_id) {
-            const { selectedFolder } = info;
+            const { selectedFolders } = info;
  
-            if (!!selectedFolder) {
-                processMessagesInFolder(selectedFolder);
+            if (!!selectedFolders) {
+                for (const folder of selectedFolders) {
+                    processMessagesInFolder(folder);
+                }
             }
         }
     });

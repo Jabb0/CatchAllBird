@@ -151,6 +151,7 @@ describe("moveMessages()", function() {
             accountId: "blaa",
             path: "blub",
             name: "blub",
+            id: "parentFolderId"
             // subFolders: []
         }
         messenger.folders.getSubFolders.mockImplementation(async () => {
@@ -166,6 +167,7 @@ describe("moveMessages()", function() {
             accountId: "blaa",
             path: "blub.peter",
             name: "peter",
+            folderId: "xyz"
             // subFolders: []
         }
 
@@ -176,9 +178,9 @@ describe("moveMessages()", function() {
 
         moveMessages(parentFolder, mailMapping);
 
-        await expect(messenger.folders.getSubFolders).toHaveBeenCalledWith(parentFolder, false);
-        await expect(messenger.folders.create).toHaveBeenCalledWith(parentFolder, "peter");
-        await expect(messenger.messages.move).toHaveBeenCalledWith(mailIds, newFolder);
+        await expect(messenger.folders.getSubFolders).toHaveBeenCalledWith(parentFolder.id, false);
+        await expect(messenger.folders.create).toHaveBeenCalledWith(parentFolder.id, "peter");
+        await expect(messenger.messages.move).toHaveBeenCalledWith(mailIds, newFolder.id);
     })
 
     it("should create new folder with dot replacement if necessary", async function() {
@@ -186,6 +188,7 @@ describe("moveMessages()", function() {
             accountId: "blaa",
             path: "blub",
             name: "blub",
+            id: "parentFolderId"
             // subFolders: []
         }
         messenger.folders.getSubFolders.mockImplementation(async () => {
@@ -201,6 +204,7 @@ describe("moveMessages()", function() {
             accountId: "blaa",
             path: "blub.peterDOThansDOTwurst",
             name: "peterDOThansDOTwurst",
+            id: "xyz"
             // subFolders: []
         }
 
@@ -211,8 +215,8 @@ describe("moveMessages()", function() {
 
         moveMessages(parentFolder, mailMapping);
 
-        await expect(messenger.folders.getSubFolders).toHaveBeenCalledWith(parentFolder, false);
-        await expect(messenger.folders.create).toHaveBeenCalledWith(parentFolder, "peterDOThansDOTwurst");
-        await expect(messenger.messages.move).toHaveBeenCalledWith(mailIds, newFolder);
+        await expect(messenger.folders.getSubFolders).toHaveBeenCalledWith(parentFolder.id, false);
+        await expect(messenger.folders.create).toHaveBeenCalledWith(parentFolder.id, "peterDOThansDOTwurst");
+        await expect(messenger.messages.move).toHaveBeenCalledWith(mailIds, newFolder.id);
     })
 });
