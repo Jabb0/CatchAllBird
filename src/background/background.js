@@ -7,37 +7,40 @@
 
 import { processInbox, processMessagesInFolder, onNewMailReceived} from "./processing.js";
 
+const MENU_ITEM_ID_PROCESS_FOLDER = "catchallbirdMenuItemProcessFolder"
+const MENU_ITEM_ID_PROCESS_INBOX = "catchallbirdMenuItemProcessInbox"
+
 async function welcomeTab() {
     await messenger.tabs.create({
         url: "../popup/popup.html",
         index: 1
     });
- }
+}
 
- async function addMenuItemProcessInbox() {
+async function addMenuItemProcessInbox() {
     // Setup menu button for reprocessing inbox
-    const menu_id = await messenger.menus.create({
+    await messenger.menus.create({
         title: "CatchAll Bird: Process INBOX",
         contexts: [
             "tools_menu"
         ],
-        id: "catchallbirdMenuItemProcessInbox"
+        id: MENU_ITEM_ID_PROCESS_INBOX
     });
- }
+}
 
- async function addMenuItemProcessFolder() {
+async function addMenuItemProcessFolder() {
     // Setup menu button for processing a specific folder
-    const menu_id = await messenger.menus.create({
+    await messenger.menus.create({
         title: "CatchAll Bird: Process this folder",
         contexts: [
             "folder_pane"
         ],
-        id: "catchallbirdMenuItemProcessFolder"
+        id: MENU_ITEM_ID_PROCESS_FOLDER
     });
- }
+}
 
 async function load() {
-    const { 
+    const {
         catchAllBirdHideWelcomeMessage: hideWelcomeMessage
     } = await messenger.storage.local.get({
         catchAllBirdHideWelcomeMessage: false
@@ -60,7 +63,7 @@ async function load() {
 messenger.messages.onNewMailReceived.addListener(onNewMailReceived);
 
 messenger.menus.onClicked.addListener(async (info, tab) => {
-    if (info.menuItemId == "catchallbirdMenuItemProcessFolder") {
+    if (info.menuItemId == MENU_ITEM_ID_PROCESS_FOLDER) {
         const { selectedFolders } = info;
 
         if (!!selectedFolders) {
@@ -72,7 +75,7 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
 });
 
 messenger.menus.onClicked.addListener(async (info, tab) => {
-    if (info.menuItemId == "catchallbirdMenuItemProcessInbox") {
+    if (info.menuItemId == MENU_ITEM_ID_PROCESS_INBOX) {
         await processInbox();
     }
 });
