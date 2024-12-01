@@ -33,7 +33,7 @@ export async function moveMessages(parentFolder, mailMapping) {
 
    // No need to include nested subfolders.
    // Build mapping from prefix to subfolders
-   const subfolders = await messenger.folders.getSubFolders(parentFolder, false);
+   const subfolders = await messenger.folders.getSubFolders(parentFolder.id, false);
    const subfolderMapping = new Map(subfolders.map(subfolder => [subfolder.name, subfolder]));
 
    // Some mail server seem to thread . as separator between folders. Naming a folder with a dot will cause the creation of a subfolder and the move to fail.
@@ -43,10 +43,10 @@ export async function moveMessages(parentFolder, mailMapping) {
        const dotReplacedPrefix = prefix.replaceAll(".", DOT_SUBSTITUTION);
        // Make sure the prefix subfolder exists
        if (!subfolderMapping.has(dotReplacedPrefix)) {
-           subfolderMapping.set(dotReplacedPrefix, await messenger.folders.create(parentFolder, dotReplacedPrefix));
+           subfolderMapping.set(dotReplacedPrefix, await messenger.folders.create(parentFolder.id, dotReplacedPrefix));
        }
 
-       await messenger.messages.move(mailIds, subfolderMapping.get(dotReplacedPrefix));
+       await messenger.messages.move(mailIds, subfolderMapping.get(dotReplacedPrefix).id);
    }
 }
 
@@ -68,6 +68,7 @@ async function updateIdentities(account, domain, neededPrefixes) {
    const mainIdentity = account.identities[0];
    delete mainIdentity.accountId;
    delete mainIdentity.id;
+   delete mainIdentity.encryptionCapabilities //Setting the encryptionCapabilities property of a MailIdentity is not supported.
 
    for (const prefix of neededPrefixes) {
        if (!availablePrefixes.has(prefix)) {
@@ -139,7 +140,7 @@ async function processMessages(folder, messages) {
 
 async function getInboxForAccount(accountId) {
    const account = await messenger.accounts.get(accountId, true);
-   const inboxFolder = account.folders.filter(folder => folder.path == GLOBAL_INBOX_PATH)[0] || null;
+   const inboxFolder = account.rootFolder.subFolders.filter(folder => folder.path == GLOBAL_INBOX_PATH)[0] || null;
    return inboxFolder;
 }
 
@@ -159,7 +160,7 @@ export async function processInbox() {
 }
 
 export async function processMessagesInFolder(folder) {
-   const allMessages = await messenger.messages.list(folder);
+   const allMessages = await messenger.messages.list(folder.id);
    await processMessages(folder, allMessages);
 }
 

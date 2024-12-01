@@ -1,22 +1,22 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "CatchAll Bird",
     "description": "Enable Thunderbird to handle CatchAll email addresses.",
-    "version": "1.1.2",
+    "version": "1.2.0",
     "author": "Jabb0",
     "browser_specific_settings": {
         "gecko": {
             "id": "catchallbird@jabb0",
-            "strict_min_version": "78.0"
+            "strict_min_version": "128.0"
         }
     },
     "background": {
-        "page": "background/background.html"
+        "scripts": ["background/background.js"],
+        "type": "module"
     },
     "options_ui": {
         "page": "optionsPage/options.html",
-        "open_in_tab": false,
-        "browser_style": true
+        "open_in_tab": false
     },
     "permissions": [
         "messagesRead",

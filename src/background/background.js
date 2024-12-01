@@ -7,54 +7,40 @@
 
 import { processInbox, processMessagesInFolder, onNewMailReceived} from "./processing.js";
 
+const MENU_ITEM_ID_PROCESS_FOLDER = "catchallbirdMenuItemProcessFolder"
+const MENU_ITEM_ID_PROCESS_INBOX = "catchallbirdMenuItemProcessInbox"
+
 async function welcomeTab() {
     await messenger.tabs.create({
         url: "../popup/popup.html",
         index: 1
     });
- }
- 
- 
- async function addMenuItemProcessInbox() {
+}
+
+async function addMenuItemProcessInbox() {
     // Setup menu button for reprocessing inbox
-    const menu_id = await messenger.menus.create({
+    await messenger.menus.create({
         title: "CatchAll Bird: Process INBOX",
         contexts: [
             "tools_menu"
         ],
+        id: MENU_ITEM_ID_PROCESS_INBOX
     });
- 
-    await messenger.menus.onClicked.addListener(async (info, tab) => {
-        if (info.menuItemId == menu_id) {
-            await processInbox();
-        }
-    });
- }
- 
- 
- async function addMenuItemProcessFolder() {
+}
+
+async function addMenuItemProcessFolder() {
     // Setup menu button for processing a specific folder
-    const menu_id = await messenger.menus.create({
+    await messenger.menus.create({
         title: "CatchAll Bird: Process this folder",
         contexts: [
             "folder_pane"
         ],
+        id: MENU_ITEM_ID_PROCESS_FOLDER
     });
- 
-    await messenger.menus.onClicked.addListener(async (info, tab) => {
-        if (info.menuItemId == menu_id) {
-            const { selectedFolder } = info;
- 
-            if (!!selectedFolder) {
-                processMessagesInFolder(selectedFolder);
-            }
-        }
-    });
- }
-
+}
 
 async function load() {
-    const { 
+    const {
         catchAllBirdHideWelcomeMessage: hideWelcomeMessage
     } = await messenger.storage.local.get({
         catchAllBirdHideWelcomeMessage: false
@@ -66,11 +52,32 @@ async function load() {
 
     await addMenuItemProcessInbox();
     await addMenuItemProcessFolder();
+};
 
-    // Add a listener for the onNewMailReceived events.
-    // On each new message decide what to do
-    // Messages are already filtered by junk classification and message filters
-    await messenger.messages.onNewMailReceived.addListener(onNewMailReceived);
-}
+// listener creation has to be on top level to work with manifest v3 
+// https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers#register-listeners
+
+// Add a listener for the onNewMailReceived events.
+// On each new message decide what to do
+// Messages are already filtered by junk classification and message filters
+messenger.messages.onNewMailReceived.addListener(onNewMailReceived);
+
+messenger.menus.onClicked.addListener(async (info, tab) => {
+    if (info.menuItemId == MENU_ITEM_ID_PROCESS_FOLDER) {
+        const { selectedFolders } = info;
+
+        if (!!selectedFolders) {
+            for (const folder of selectedFolders) {
+                processMessagesInFolder(folder);
+            }
+        }
+    }
+});
+
+messenger.menus.onClicked.addListener(async (info, tab) => {
+    if (info.menuItemId == MENU_ITEM_ID_PROCESS_INBOX) {
+        await processInbox();
+    }
+});
 
 document.addEventListener("DOMContentLoaded", load);
