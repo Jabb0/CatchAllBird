@@ -39,7 +39,7 @@ async function addMenuItemProcessFolder() {
     });
 }
 
-async function load() {
+async function onInstalled() {
     const {
         catchAllBirdHideWelcomeMessage: hideWelcomeMessage
     } = await messenger.storage.local.get({
@@ -50,9 +50,15 @@ async function load() {
         await welcomeTab();
     }
 
+    await messenger.menus.removeAll();
+
     await addMenuItemProcessInbox();
     await addMenuItemProcessFolder();
 };
+
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/menus#creating_menu_items
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onInstalled
+messenger.runtime.onInstalled.addListener(onInstalled);
 
 // listener creation has to be on top level to work with manifest v3 
 // https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers#register-listeners
@@ -79,5 +85,3 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
         await processInbox();
     }
 });
-
-document.addEventListener("DOMContentLoaded", load);
